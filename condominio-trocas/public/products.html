@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="products.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Produtos Disponíveis</h1>
+        <div id="products-list" class="product-list">
+            <!-- Produtos serão listados aqui -->
+        </div>
+    </div>
+
+    <script>
+        // Função para carregar produtos da API
+        const loadProducts = async () => {
+            const token = localStorage.getItem('token');  // Pegando o token do localStorage
+            if (!token) {
+                // Se não houver token, redireciona para o login
+                window.location.href = '/login.html';
+                return;
+            }
+
+            try {
+                // Fazendo a requisição para a API para buscar os produtos
+                const response = await fetch('http://localhost:3000/api/products', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`  // Passando o token no cabeçalho
+                    }
+                });
+
+                // Verificando se a requisição foi bem-sucedida
+                const data = await response.json();
+
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    // Exibindo os produtos na tela
+                    displayProducts(data);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar os produtos:', error);
+            }
+        };
+
+        // Função para exibir os produtos na tela
+        const displayProducts = (products) => {
+            const productsList = document.getElementById('products-list');
+            productsList.innerHTML = ''; // Limpar a lista atual de produtos
+
+            if (products.length === 0) {
+                productsList.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
+                return;
+            }
+
+            // Loop para criar os cards de cada produto
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                productCard.innerHTML = `
+                    <h2>${product.title}</h2>
+                    <p><strong>Preço:</strong> R$ ${product.price}</p>
+                    <p><strong>Vendedor:</strong> ${product.user.name} da ${product.user.apartment_number}</p>
+                    <p><strong>Descrição:</strong> ${product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description}</p>
+                    <button class="view-button">Ver Detalhes</button>
+                `;
+                productsList.appendChild(productCard);
+            });
+        };
+
+        // Carregar os produtos quando a página for carregada
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>

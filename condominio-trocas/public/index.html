@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        <div id="message"></div>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <p>Ainda não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const userData = {
+                email: email,
+                password: password
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', result.token);  // Salva o token no localStorage
+                    window.location.href = 'products.html';  // Redireciona para a página de produtos
+                } else {
+                    document.getElementById('message').innerText = result.error || 'Erro ao fazer login';
+                    document.getElementById('message').style.color = 'red';
+                }
+            } catch (error) {
+                document.getElementById('message').innerText = 'Erro na comunicação com o servidor';
+                document.getElementById('message').style.color = 'red';
+            }
+        });
+    </script>
+</body>
+</html>

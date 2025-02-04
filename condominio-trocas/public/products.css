@@ -1,0 +1,121 @@
+/* Estilização para o body */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 20px;
+}
+
+/* Container da página de produtos */
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 900px;
+}
+
+/* Cabeçalho da página */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Estilização para a lista de produtos */
+#products-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Card de produto */
+.product-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: calc(33% - 20px); /* Para exibir 3 produtos por linha */
+    min-width: 250px;
+    box-sizing: border-box;
+    transition: transform 0.3s ease;
+}
+
+/* Efeito de hover no card */
+.product-card:hover {
+    transform: scale(1.05);
+}
+
+/* Título do produto */
+.product-card h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Descrição e detalhes do produto */
+.product-card p {
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+/* Preço do produto */
+.product-card p strong {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Informações do vendedor */
+.product-card .seller-info {
+    font-size: 12px;
+    color: #777;
+    margin-top: 10px;
+}
+
+/* Botão de voltar ao login ou outras ações */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Mensagens de erro ou sucesso */
+#message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 20px;
+    color: red;
+}
+
+/* Link de "Cadastre-se" */
+#register-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+}
+
+#register-link a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+#register-link a:hover {
+    text-decoration: underline;
+}

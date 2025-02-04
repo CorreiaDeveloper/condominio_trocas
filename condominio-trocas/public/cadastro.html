@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="cadastro.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Usuário</h1>
+        <form id="signupForm">
+            <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input type="text" id="name" name="name" required />
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirmar Senha</label>
+                <input type="password" id="confirm-password" name="confirm-password" required />
+            </div>
+            <div class="form-group">
+                <label for="tower">Torre</label>
+                <select id="tower" name="tower" required>
+                    <option value="">Selecione a Torre</option>
+                    <option value="1">Torre 1</option>
+                    <option value="2">Torre 2</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="apartment_number">Número do Apartamento</label>
+                <input type="number" id="apartment_number" name="apartment_number" required />
+            </div>
+            <div class="form-group">
+                <label for="phone_number">Telefone (Opcional)</label>
+                <input type="tel" id="phone_number" name="phone_number" />
+            </div>
+            <button type="submit">Cadastrar</button>
+        </form>
+        <div id="message"></div>
+        <div id="register-link">
+            <a href="index.html">Já tem uma conta? Faça login</a>
+        </div>
+    </div>
+</body>
+</html>
