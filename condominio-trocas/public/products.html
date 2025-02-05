@@ -26,22 +26,17 @@
             }
 
             try {
-                // Fazendo a requisição para a API
                 const response = await fetch('http://localhost:3000/api/products', {
                     method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();
-
-                console.log('Resposta da API:', data); // Exibe os dados recebidos
+                console.log('Resposta da API:', data);
 
                 if (Array.isArray(data) && data.length > 0) {
-                    displayProducts(data); // Só chama displayProducts se a resposta for válida
+                    displayProducts(data);
                 } else {
-                    console.error('Produtos não encontrados ou formato incorreto.');
                     alert('Nenhum produto encontrado ou dados inválidos.');
                 }
             } catch (error) {
@@ -52,14 +47,13 @@
         // Função para exibir os produtos na tela
         const displayProducts = (products) => {
             const productsList = document.getElementById('products-list');
-            productsList.innerHTML = ''; // Limpar a lista atual de produtos
+            productsList.innerHTML = ''; 
 
-            if (!Array.isArray(products) || products.length === 0) {
+            if (!products.length) {
                 productsList.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
                 return;
             }
 
-            // Loop para criar os cards de cada produto
             products.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.classList.add('product-card');
@@ -68,11 +62,13 @@
                 const productImage = product.photos && product.photos.length > 0 ? product.photos[0] : 'default-image.jpg';
 
                 productCard.innerHTML = `
-            <img src="${productImage}" alt="Imagem do produto" class="product-image">
-            <h2>${product.title}</h2>
-            <p><strong>Proprietário:</strong> ${product.owner.name} - Apto ${product.owner.apartment}</p>
-            <p><strong>Preço:</strong> R$ ${product.price}</p>
-        `;
+                <div class="product-images">
+                    <img src="${productImage}" alt="Imagem do produto">
+                </div>
+                <h2>${product.title}</h2>
+                <p><strong>Proprietário:</strong> ${product.owner.name} - Apto ${product.owner.apartment}</p>
+                <p><strong>Preço:</strong> R$ ${product.price}</p>
+                `;
 
                 // Adicionar evento de clique para redirecionar para a página de detalhes
                 productCard.addEventListener('click', () => {
@@ -87,4 +83,5 @@
         window.onload = loadProducts;
     </script>
 </body>
+
 </html>

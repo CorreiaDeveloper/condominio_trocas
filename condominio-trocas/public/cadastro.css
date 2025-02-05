@@ -1,112 +1,67 @@
-/* Estilização para o body */
 body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f0f0f5;  /* Cor de fundo suave */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
+    padding: 0;
 }
 
-/* Container do formulário */
 .container {
-    background-color: #fff;
-    padding: 40px 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     width: 400px;
-    max-width: 100%;
+    margin: 50px auto;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Cabeçalho da página */
 h1 {
     text-align: center;
-    margin-bottom: 30px;
-    color: #4CAF50;  /* Cor verde suave */
-    font-size: 24px;
+    color: #333;
 }
 
-/* Estilização dos campos de entrada */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 label {
     display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    font-size: 14px;
-    color: #333;
+    margin-bottom: 5px;
+    color: #555;
 }
 
 input, select {
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
 
-/* Efeito visual nos campos ao focar */
-input:focus, select:focus {
-    border-color: #4CAF50;
-    outline: none;
-}
-
-/* Botão de submit */
 button {
     width: 100%;
-    padding: 14px;
+    padding: 10px;
     background-color: #4CAF50;
     color: white;
     border: none;
-    border-radius: 8px;
-    font-size: 18px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-/* Efeito de hover no botão */
 button:hover {
     background-color: #45a049;
 }
 
-/* Mensagens de erro ou sucesso */
 #message {
-    text-align: center;
-    font-weight: bold;
-    margin-top: 20px;
     color: red;
+    text-align: center;
+    margin-top: 10px;
 }
 
-/* Link de "Cadastre-se" */
 #register-link {
-    display: block;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
 #register-link a {
     color: #4CAF50;
     text-decoration: none;
-    font-weight: bold;
-}
-
-#register-link a:hover {
-    text-decoration: underline;
-}
-
-/* Estilo para os campos de telefone e apartamento */
-input[type="tel"], input[type="number"], input[type="email"] {
-    padding: 12px;
-}
-
-/* Estilização do select para escolher a torre */
-select {
-    padding: 12px;
-    font-size: 16px;
-    background-color: #f7f7f7;
 }

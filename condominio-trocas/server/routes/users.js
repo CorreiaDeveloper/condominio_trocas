@@ -7,18 +7,18 @@ const router = express.Router();
 
 // Rota para login
 router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { login, password } = req.body;  // Alterado para login
 
     // Verificando se os dados obrigatórios foram fornecidos
-    if (!email || !password) {
-        return res.status(400).json({ error: 'E-mail e senha são obrigatórios!' });
+    if (!login || !password) {  // Alterado para login
+        return res.status(400).json({ error: 'Login e senha são obrigatórios!' });
     }
 
     // Verificando se o usuário existe no banco de dados
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [rows] = await pool.query('SELECT * FROM users WHERE login = ?', [login]);  // Alterado para login
 
     if (rows.length === 0) {
-        return res.status(400).json({ error: 'E-mail ou senha inválidos!' });
+        return res.status(400).json({ error: 'Login ou senha inválidos!' });
     }
 
     // Comparando a senha informada com a senha armazenada (hash)
@@ -26,11 +26,11 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password_hash);
 
     if (!match) {
-        return res.status(400).json({ error: 'E-mail ou senha inválidos!' });
+        return res.status(400).json({ error: 'Login ou senha inválidos!' });
     }
 
     // Gerando o token JWT
-    const token = jwt.sign({ userId: user.id, email: user.email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user.id, login: user.login }, process.env.JWT_SECRET, { // Alterado para login
         expiresIn: '1h', // O token vai expirar em 1 hora
     });
 
@@ -40,17 +40,18 @@ router.post('/login', async (req, res) => {
 
 // Rota de Cadastro
 router.post('/register', async (req, res) => {
-    const { name, email, password, tower, apartment } = req.body;
+    const { name, login, password, tower, apartment } = req.body;  // Alterado para login
+    console.log(req.body);
 
     // Validar campos obrigatórios
-    if (!name || !email || !password || !tower || !apartment) {
+    if (!name || !login || !password || !tower || !apartment) {  // Alterado para login
         return res.status(400).json({ error: 'Todos os campos são obrigatórios!' });
     }
 
-    // Verificar se o email já existe
-    const [existingUser] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
-    if (existingUser.length > 0) {
-        return res.status(400).json({ error: 'Email já cadastrado!' });
+    // Verificar se o login já existe
+    const [existingUser] = await pool.query('SELECT * FROM users WHERE login = ?', [login]);  // Alterado para login
+    if (existingUser.length > 0) { 
+        return res.status(400).json({ error: 'Login já cadastrado!' });  // Alterado para login
     }
 
     // Gerar o hash da senha
@@ -59,12 +60,12 @@ router.post('/register', async (req, res) => {
     try {
         // Inserir o usuário no banco de dados
         const query = `
-            INSERT INTO users (name, email, password_hash, apartment_number, phone_number)
+            INSERT INTO users (name, login, password_hash, apartment_number, phone_number)
             VALUES (?, ?, ?, ?, ?)
         `;
         const [result] = await pool.query(query, [
             name,
-            email,
+            login,  // Alterado para login
             passwordHash,
             `Torre ${tower} - ${apartment}`, // Formatar o campo apartamento
             req.body.phone_number // Supondo que o telefone também venha do corpo da requisição
@@ -72,7 +73,7 @@ router.post('/register', async (req, res) => {
 
         // Gerar o token JWT
         const userId = result.insertId;
-        const token = jwt.sign({ userId, email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId, login }, process.env.JWT_SECRET, { expiresIn: '1h' });  // Alterado para login
 
         // Enviar o token de volta para o cliente
         res.status(201).json({ message: 'Cadastro realizado com sucesso!', token });
@@ -85,10 +86,10 @@ router.post('/register', async (req, res) => {
 // Alterar dados do usuário
 router.put('/me', authenticate, async (req, res) => {
     const userId = req.user.userId; // ID do usuário que está fazendo a requisição
-    const { name, email, phone_number } = req.body;  // Os campos que o usuário pode alterar
+    const { name, login, phone_number } = req.body;  // Alterado para login
 
     // Verificando se ao menos um campo foi informado para alteração
-    if (!name && !email && !phone_number) {
+    if (!name && !login && !phone_number) {  // Alterado para login
         return res.status(400).json({ error: 'Informe ao menos um campo para atualização!' });
     }
 
@@ -101,9 +102,9 @@ router.put('/me', authenticate, async (req, res) => {
             query += 'name = ?, ';
             params.push(name);
         }
-        if (email) {
-            query += 'email = ?, ';
-            params.push(email);
+        if (login) {  // Alterado para login
+            query += 'login = ?, ';  // Alterado para login
+            params.push(login);
         }
         if (phone_number) {
             query += 'phone_number = ?, ';
@@ -148,7 +149,7 @@ router.get('/me', authenticate, async (req, res) => {
     const userId = req.user.userId;  // Informações do usuário decodificadas no token
 
     // Buscando os dados do usuário no banco de dados
-    const [rows] = await pool.query('SELECT id, name, email, apartment_number, phone_number FROM users WHERE id = ?', [userId]);
+    const [rows] = await pool.query('SELECT id, name, login, apartment_number, phone_number FROM users WHERE id = ?', [userId]);
 
     if (rows.length === 0) {
         return res.status(404).json({ error: 'Usuário não encontrado!' });

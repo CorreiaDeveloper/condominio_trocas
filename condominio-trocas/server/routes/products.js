@@ -26,20 +26,20 @@ router.get('/', authenticateJWT, async (req, res) => {
 
     try {
         const [rows] = await pool.query(`
-            SELECT 	
-                u.id,			
-                p.title,    
-                p.description,            
+            SELECT 
+                p.id, 
+                p.title, 
+                p.description, 
                 p.price,
                 p.is_donation,
                 pi.image_url,
                 u.name,
                 u.apartment_number
             FROM 
-                users u
+                products p
             JOIN 
-                products p ON p.user_id = u.id
-            JOIN 
+                users u ON p.user_id = u.id
+            LEFT JOIN 
                 product_images pi ON pi.product_id = p.id
             WHERE 
                 p.user_id != ?
@@ -71,6 +71,7 @@ router.get('/', authenticateJWT, async (req, res) => {
             return acc;
         }, []);
 
+
         res.json(products);
     } catch (error) {
         console.error(error);
@@ -84,13 +85,13 @@ router.get('/:id', authenticateJWT, async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT p.id, p.title, p.description, p.price, p.is_donation, 
-                   u.name, u.apartment_number,
-                   GROUP_CONCAT(pi.image_url) AS photos
+                u.name, u.apartment_number,
+                GROUP_CONCAT(pi.image_url) AS photos
             FROM products p
             JOIN users u ON p.user_id = u.id
             LEFT JOIN product_images pi ON pi.product_id = p.id
             WHERE p.id = ?
-            GROUP BY p.id
+            GROUP BY p.id;
         `, [productId]);
 
         if (rows.length === 0) {
@@ -99,7 +100,7 @@ router.get('/:id', authenticateJWT, async (req, res) => {
 
         const product = rows[0];
         product.photos = product.photos ? product.photos.split(',') : [];
-        
+
         res.json({
             id: product.id,
             title: product.title,

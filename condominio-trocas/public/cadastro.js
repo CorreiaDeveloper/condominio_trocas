@@ -3,7 +3,7 @@ document.getElementById('signupForm').addEventListener('submit', async function 
 
     // Coleta os dados do formulário
     const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
+    const login = document.getElementById('login').value;
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm-password').value;
     const tower = document.getElementById('tower').value;
@@ -17,21 +17,18 @@ document.getElementById('signupForm').addEventListener('submit', async function 
         return;
     }
 
-    // Se desejar, você pode concatenar torre e apartamento ou enviá-los separadamente.
-    // Aqui vamos concatená-los no formato "Torre-Apartamento" (por exemplo, "1-101")
-    const apartment_number = `Torre ${tower} - ${apartment}`;
-
     // Cria o objeto com os dados do usuário
     const userData = {
         name,
-        email,
+        login,
         password,
-        apartment_number,  // campo que contém a informação concatenada
+        tower,
+        apartment,
         phone_number
     };
 
     try {
-        // Faça a requisição para o back-end (a rota de cadastro está em /users/register)
+        // Requisição para o back-end (a rota de cadastro está em /users/register)
         const response = await fetch('http://localhost:3000/users/register', {
             method: 'POST',
             headers: {
@@ -41,13 +38,32 @@ document.getElementById('signupForm').addEventListener('submit', async function 
         });
 
         const result = await response.json();
+        console.log(result); // Verifique o conteúdo da resposta
 
         if (response.ok) {
-            // Armazenar o token no localStorage para manter o usuário logado
-            localStorage.setItem('token', result.token);  // Ajuste aqui para usar "result.token" em vez de "data.token"
+            // Realiza o login automaticamente
+            const loginResponse = await fetch('http://localhost:3000/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    login: userData.login,
+                    password: userData.password
+                })
+            });
 
-            // Redirecionar o usuário para a página de produtos ou outra página principal
-            window.location.href = 'products.html';
+            const loginResult = await loginResponse.json();
+            if (loginResponse.ok) {
+                // Armazenar o token no localStorage
+                localStorage.setItem('token', loginResult.token);
+
+                // Redirecionar o usuário para a página de produtos ou outra página principal
+                window.location.href = 'products.html';
+            } else {
+                document.getElementById('message').innerText = loginResult.error || 'Erro ao realizar login';
+                document.getElementById('message').style.color = 'red';
+            }
         } else {
             document.getElementById('message').innerText = result.error || 'Erro ao cadastrar usuário';
             document.getElementById('message').style.color = 'red';

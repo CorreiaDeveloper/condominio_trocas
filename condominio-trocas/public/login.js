@@ -1,10 +1,10 @@
-document.getElementById('login-form').addEventListener('submit', async function(event) {
+document.getElementById('login-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    const email = document.getElementById('email').value;
+    const login = document.getElementById('login').value;
     const password = document.getElementById('password').value;
 
-    const userData = { email, password };
+    const userData = { login, password };
 
     try {
         const response = await fetch('http://localhost:3000/users/login', {
