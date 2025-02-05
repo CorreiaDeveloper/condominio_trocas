@@ -22,22 +22,102 @@ const authenticateJWT = (req, res, next) => {
 
 // Listar produtos de todos os usuários, excluindo os do usuário autenticado
 router.get('/', authenticateJWT, async (req, res) => {
-    const userId = req.user.userId;  // Pegando o ID do usuário autenticado do token
+    const userId = req.user.userId;
 
     try {
-        // Modificando a consulta para retornar todos os produtos, exceto os do usuário autenticado
-        const [rows] = await pool.query('SELECT * FROM products WHERE user_id != ?', [userId]);
-        
+        const [rows] = await pool.query(`
+            SELECT 	
+                u.id,			
+                p.title,    
+                p.description,            
+                p.price,
+                p.is_donation,
+                pi.image_url,
+                u.name,
+                u.apartment_number
+            FROM 
+                users u
+            JOIN 
+                products p ON p.user_id = u.id
+            JOIN 
+                product_images pi ON pi.product_id = p.id
+            WHERE 
+                p.user_id != ?
+        `, [userId]);
+
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Nenhum produto encontrado!' });
         }
-        
-        res.json(rows);  // Retorna a lista de produtos encontrados
+
+        // Agrupando imagens por produto
+        const products = rows.reduce((acc, row) => {
+            const existingProduct = acc.find(product => product.id === row.id);
+            if (existingProduct) {
+                existingProduct.photos.push(row.image_url);
+            } else {
+                acc.push({
+                    id: row.id,
+                    title: row.title,
+                    description: row.description,
+                    price: row.price,
+                    isDonation: row.is_donation,
+                    photos: row.image_url ? [row.image_url] : [],
+                    owner: {
+                        name: row.name,
+                        apartment: row.apartment_number
+                    }
+                });
+            }
+            return acc;
+        }, []);
+
+        res.json(products);
     } catch (error) {
         console.error(error);
         res.status(500).send('Erro ao buscar produtos.');
     }
 });
+
+router.get('/:id', authenticateJWT, async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+        const [rows] = await pool.query(`
+            SELECT p.id, p.title, p.description, p.price, p.is_donation, 
+                   u.name, u.apartment_number,
+                   GROUP_CONCAT(pi.image_url) AS photos
+            FROM products p
+            JOIN users u ON p.user_id = u.id
+            LEFT JOIN product_images pi ON pi.product_id = p.id
+            WHERE p.id = ?
+            GROUP BY p.id
+        `, [productId]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Produto não encontrado!' });
+        }
+
+        const product = rows[0];
+        product.photos = product.photos ? product.photos.split(',') : [];
+        
+        res.json({
+            id: product.id,
+            title: product.title,
+            description: product.description,
+            price: product.price,
+            isDonation: product.is_donation,
+            owner: {
+                name: product.name,
+                apartment: product.apartment_number,
+            },
+            photos: product.photos
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Erro ao buscar detalhes do produto.');
+    }
+});
+
 
 // Criar novo produto
 router.post('/', authenticateJWT, async (req, res) => {

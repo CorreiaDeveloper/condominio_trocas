@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos</title>
     <link rel="stylesheet" href="products.css">
 </head>
+
 <body>
     <div class="container">
         <h1>Produtos Disponíveis</h1>
-        <div id="products-list" class="product-list">
+        <div id="products-list">
             <!-- Produtos serão listados aqui -->
         </div>
     </div>
@@ -17,30 +19,30 @@
     <script>
         // Função para carregar produtos da API
         const loadProducts = async () => {
-            const token = localStorage.getItem('token');  // Pegando o token do localStorage
+            const token = localStorage.getItem('token');
             if (!token) {
-                // Se não houver token, redireciona para o login
                 window.location.href = '/login.html';
                 return;
             }
 
             try {
-                // Fazendo a requisição para a API para buscar os produtos
+                // Fazendo a requisição para a API
                 const response = await fetch('http://localhost:3000/api/products', {
                     method: 'GET',
                     headers: {
-                        'Authorization': `Bearer ${token}`  // Passando o token no cabeçalho
+                        'Authorization': `Bearer ${token}`
                     }
                 });
 
-                // Verificando se a requisição foi bem-sucedida
                 const data = await response.json();
 
-                if (data.error) {
-                    alert(data.error);
+                console.log('Resposta da API:', data); // Exibe os dados recebidos
+
+                if (Array.isArray(data) && data.length > 0) {
+                    displayProducts(data); // Só chama displayProducts se a resposta for válida
                 } else {
-                    // Exibindo os produtos na tela
-                    displayProducts(data);
+                    console.error('Produtos não encontrados ou formato incorreto.');
+                    alert('Nenhum produto encontrado ou dados inválidos.');
                 }
             } catch (error) {
                 console.error('Erro ao carregar os produtos:', error);
@@ -52,7 +54,7 @@
             const productsList = document.getElementById('products-list');
             productsList.innerHTML = ''; // Limpar a lista atual de produtos
 
-            if (products.length === 0) {
+            if (!Array.isArray(products) || products.length === 0) {
                 productsList.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
                 return;
             }
@@ -61,13 +63,22 @@
             products.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.classList.add('product-card');
+
+                // Verifica se o produto tem fotos
+                const productImage = product.photos && product.photos.length > 0 ? product.photos[0] : 'default-image.jpg';
+
                 productCard.innerHTML = `
-                    <h2>${product.title}</h2>
-                    <p><strong>Preço:</strong> R$ ${product.price}</p>
-                    <p><strong>Vendedor:</strong> ${product.user.name} da ${product.user.apartment_number}</p>
-                    <p><strong>Descrição:</strong> ${product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description}</p>
-                    <button class="view-button">Ver Detalhes</button>
-                `;
+            <img src="${productImage}" alt="Imagem do produto" class="product-image">
+            <h2>${product.title}</h2>
+            <p><strong>Proprietário:</strong> ${product.owner.name} - Apto ${product.owner.apartment}</p>
+            <p><strong>Preço:</strong> R$ ${product.price}</p>
+        `;
+
+                // Adicionar evento de clique para redirecionar para a página de detalhes
+                productCard.addEventListener('click', () => {
+                    window.location.href = `product-detail.html?id=${product.id}`;
+                });
+
                 productsList.appendChild(productCard);
             });
         };

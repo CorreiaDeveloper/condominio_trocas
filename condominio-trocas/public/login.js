@@ -1,15 +1,10 @@
-// Função para fazer login
 document.getElementById('login-form').addEventListener('submit', async function(event) {
     event.preventDefault();
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    // Cria o objeto com os dados do usuário
-    const userData = {
-        email,
-        password,
-    };
+    const userData = { email, password };
 
     try {
         const response = await fetch('http://localhost:3000/users/login', {
@@ -22,13 +17,15 @@ document.getElementById('login-form').addEventListener('submit', async function(
 
         const result = await response.json();
 
-        if (response.ok) {
+        if (response.ok && result.token) {
             document.getElementById('message').innerText = 'Login realizado com sucesso!';
             document.getElementById('message').style.color = 'green';
-            // Armazenar o token em localStorage ou sessionStorage
+
+            // Salvar o token no localStorage
             localStorage.setItem('token', result.token);
-            // Redirecionar para a página principal ou para a área do usuário
-            window.location.href = 'home.html';  // Exemplo de redirecionamento
+
+            // Redirecionar para a página de produtos
+            window.location.href = 'products.html'; 
         } else {
             document.getElementById('message').innerText = result.error || 'Erro ao fazer login';
             document.getElementById('message').style.color = 'red';

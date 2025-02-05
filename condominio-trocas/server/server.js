@@ -1,20 +1,17 @@
 const express = require('express');
-const cors = require('cors'); // Importa o cors
+const cors = require('cors'); 
 const userRoutes = require('./routes/users');
 const productRoutes = require('./routes/products');
+const path = require('path'); // Importação do módulo path
 
 const app = express();
 
-// Habilita o CORS para todas as origens (ou configure conforme necessário)
+// Configurar o diretório estático para arquivos públicos
+app.use(express.static(path.join(__dirname, '../public')));
+
 app.use(cors());
-
-// Middleware para analisar o corpo das requisições em JSON
 app.use(express.json());
-
-// Rotas de usuários
 app.use('/users', userRoutes);
-
-// Rotas de produtos
 app.use('/api/products', productRoutes);
 
 app.listen(3000, () => {
