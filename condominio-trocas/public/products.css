@@ -10,6 +10,59 @@ body {
     padding-top: 20px;
 }
 
+/* Estilos para o carrossel */
+.carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.carousel-images {
+    display: flex;
+    transition: transform 0.5s ease;
+}
+
+.carousel-images img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    border: none;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 50%;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Ocultar os botões por padrão */
+    pointer-events: none;
+}
+
+.carousel:hover .carousel-btn {
+    opacity: 1;
+    pointer-events: auto; /* Habilitar interações ao passar o mouse */
+}
+
+.carousel-btn.left {
+    left: 5px;
+}
+
+.carousel-btn.right {
+    right: 5px;
+}
+
 /* Container da página */
 .container {
     background-color: #fff;
@@ -75,7 +128,7 @@ h1 {
 }
 
 .product-images img:hover {
-    transform: scale(1.05); /* Zoom suave ao passar o mouse */
+    transform: scale(1.05);
 }
 
 /* Nome do produto */

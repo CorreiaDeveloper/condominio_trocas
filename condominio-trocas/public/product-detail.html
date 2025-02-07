@@ -12,6 +12,19 @@
     <div class="container" id="product-detail"></div>
 
     <script>
+        // Função para verificar se o usuário está logado
+        function checkAuthentication() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                // Caso o usuário não esteja logado, redireciona para o login
+                alert('Você precisa estar logado para ver os detalhes do produto.');
+                window.location.href = 'index.html'; // Redirecionar para a página de login
+            }
+        }
+
+        // Chamar a função de verificação de autenticação
+        checkAuthentication();
+
         // Função para buscar o ID da URL
         const getProductIdFromUrl = () => {
             const params = new URLSearchParams(window.location.search);
@@ -27,10 +40,6 @@
             }
 
             const token = localStorage.getItem('token'); // Recupera o token do localStorage
-            if (!token) {
-                alert('Você precisa estar logado para ver os detalhes do produto.');
-                return;
-            }
 
             try {
                 const response = await fetch(`http://localhost:3000/api/products/${productId}`, {
@@ -47,12 +56,12 @@
 
                 // Renderizar informações do produto
                 document.getElementById('product-detail').innerHTML = `
-            <h1>${product.title}</h1>
-            <img src="${product.photos && product.photos.length > 0 ? product.photos[0] : 'default-image.jpg'}" alt="Imagem do Produto">
-            <p><strong>Descrição:</strong> ${product.description}</p>
-            <p><strong>Proprietário:</strong> ${product.owner.name}, Apto ${product.owner.apartment}</p>
-            <p><strong>Preço:</strong> R$ ${product.price}</p>
-        `;
+                    <h1>${product.title}</h1>
+                    <img src="${product.photos && product.photos.length > 0 ? product.photos[0] : 'default-image.jpg'}" alt="Imagem do Produto">
+                    <p><strong>Descrição:</strong> ${product.description}</p>
+                    <p><strong>Proprietário:</strong> ${product.owner.name}, Apto ${product.owner.apartment}</p>
+                    <p><strong>Preço:</strong> R$ ${product.price}</p>
+                `;
             } catch (error) {
                 console.error('Erro ao carregar detalhes do produto:', error);
                 document.getElementById('product-detail').innerHTML = '<p>Erro ao carregar os detalhes do produto!</p>';

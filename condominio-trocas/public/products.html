@@ -17,11 +17,23 @@
     </div>
 
     <script>
+        // Função para verificar se o usuário está logado
+        function checkAuthentication() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Você precisa estar logado para ver os produtos.');
+                window.location.href = 'index.html'; // Redireciona para a página de login
+            }
+        }
+
+        // Chama a verificação de autenticação
+        checkAuthentication();
+
         // Função para carregar produtos da API
         const loadProducts = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
-                window.location.href = '/login.html';
+                window.location.href = 'index.html';
                 return;
             }
 
@@ -30,6 +42,14 @@
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
+
+                // Se o token for inválido, redireciona para o login
+                if (response.status === 401) {
+                    alert('Você precisa estar logado para ver os produtos.');
+                    localStorage.removeItem('token');
+                    window.location.href = 'index.html';
+                    return;
+                }
 
                 const data = await response.json();
                 console.log('Resposta da API:', data);
@@ -47,7 +67,7 @@
         // Função para exibir os produtos na tela
         const displayProducts = (products) => {
             const productsList = document.getElementById('products-list');
-            productsList.innerHTML = ''; 
+            productsList.innerHTML = '';
 
             if (!products.length) {
                 productsList.innerHTML = '<p>Nenhum produto disponível no momento.</p>';
@@ -58,28 +78,89 @@
                 const productCard = document.createElement('div');
                 productCard.classList.add('product-card');
 
-                // Verifica se o produto tem fotos
-                const productImage = product.photos && product.photos.length > 0 ? product.photos[0] : 'default-image.jpg';
+                // Se houver mais de uma foto, utiliza a estrutura de carrossel com setas;
+                // caso contrário, exibe apenas a imagem.
+                let carouselMarkup = '';
+                if (product.photos && product.photos.length > 1) {
+                    carouselMarkup = `
+            <div class="carousel">
+              <button class="carousel-btn left">&#8249;</button>
+              <div class="carousel-images">
+                ${product.photos.map(photo => `<img src="${photo}" alt="Imagem do Produto">`).join('')}
+              </div>
+              <button class="carousel-btn right">&#8250;</button>
+            </div>
+          `;
+                } else {
+                    const singlePhoto = (product.photos && product.photos.length)
+                        ? product.photos[0]
+                        : 'default-image.jpg';
+                    carouselMarkup = `
+            <div class="carousel-images">
+              <img src="${singlePhoto}" alt="Imagem do Produto">
+            </div>
+          `;
+                }
 
                 productCard.innerHTML = `
-                <div class="product-images">
-                    <img src="${productImage}" alt="Imagem do produto">
-                </div>
-                <h2>${product.title}</h2>
-                <p><strong>Proprietário:</strong> ${product.owner.name} - Apto ${product.owner.apartment}</p>
-                <p><strong>Preço:</strong> R$ ${product.price}</p>
-                `;
+          <div class="product-images">
+            ${carouselMarkup}
+          </div>
+          <h2>${product.title}</h2>
+          <p><strong>Proprietário:</strong> ${product.owner.name} - Apto ${product.owner.apartment}</p>
+          <p><strong>Preço:</strong> R$ ${product.price}</p>
+        `;
 
-                // Adicionar evento de clique para redirecionar para a página de detalhes
+                // Evento de clique para redirecionar para a página de detalhes do produto
                 productCard.addEventListener('click', () => {
                     window.location.href = `product-detail.html?id=${product.id}`;
                 });
 
                 productsList.appendChild(productCard);
             });
+
+            // Inicializa a navegação do carrossel para cada produto que contenha esse recurso
+            initializeCarousel();
         };
 
-        // Carregar os produtos quando a página for carregada
+        // Função para configurar o comportamento do carrossel
+        const initializeCarousel = () => {
+            document.querySelectorAll('.carousel').forEach(carousel => {
+                const imagesContainer = carousel.querySelector('.carousel-images');
+                const images = imagesContainer.querySelectorAll('img');
+                const leftButton = carousel.querySelector('.carousel-btn.left');
+                const rightButton = carousel.querySelector('.carousel-btn.right');
+                let currentIndex = 0;
+
+                function updateCarousel() {
+                    imagesContainer.style.transform = `translateX(-${currentIndex * 100}%)`;
+                }
+
+                // Exibir botões apenas se houver mais de uma imagem
+                if (images.length <= 1) {
+                    leftButton.style.display = 'none';
+                    rightButton.style.display = 'none';
+                    return;
+                }
+
+                leftButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    updateCarousel();
+                });
+
+                rightButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    currentIndex = (currentIndex + 1) % images.length;
+                    updateCarousel();
+                });
+
+                updateCarousel(); // Atualiza na inicialização
+            });
+        };
+
+
+        // Carrega os produtos quando a página for carregada
         window.onload = loadProducts;
     </script>
 </body>

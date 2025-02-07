@@ -25,6 +25,9 @@
     </div>
 
     <script>
+        // Limpar o token do localStorage sempre que a tela de login for acessada
+        localStorage.removeItem('token');
+
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
